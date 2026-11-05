@@ -19,6 +19,7 @@ Although there are variants, the basic cycle in SDD is divided into several phas
 ### Why has Artificial Intelligence gained so much relevance?
 
 With the advent of advanced programming assistants, the bottleneck is no longer typing fast code, but maintaining context control.
-• Avoid context drift: When an AI is given vague prompts, it tends to invent logic, break files it doesn't see, or introduce regressions.
-• Limit uncertainty: By defining clear boundaries in Markdown, AI stops guessing about the architecture and works on an explicit technical contract.
-• Traceability: If months later you wonder why the system makes a specific decision, the answer lives in the versioned specification in Git and not buried in a giant diff.
+
+- Avoid context drift: When an AI is given vague prompts, it tends to invent logic, break files it doesn't see, or introduce regressions.
+- Limit uncertainty: By defining clear boundaries in Markdown, AI stops guessing about the architecture and works on an explicit technical contract.
+- Traceability: If months later you wonder why the system makes a specific decision, the answer lives in the versioned specification in Git and not buried in a giant diff.
