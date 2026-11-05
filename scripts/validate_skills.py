@@ -4,9 +4,12 @@ import re
 import sys
 from pathlib import Path
 
+try:
+    from .skill_dependencies import load_dependencies
+except ImportError:
+    from skill_dependencies import load_dependencies
 
 NAME = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
-COMPANIONS = {"constitution": "sdd", "sdd-change": "sdd", "sdd-status": "sdd"}
 
 
 def plain_string(value: str) -> bool:
@@ -64,9 +67,10 @@ def validate_catalog(root: Path) -> tuple[list[str], int]:
             errors.append(f"{label}: description must be nonempty, at most 1024 characters, without angle brackets")
         if not match[2].strip():
             errors.append(f"{label}: empty instruction body")
-    for skill, companion in COMPANIONS.items():
-        if skill in names and companion not in names:
-            errors.append(f"{skill}: required companion {companion!r} is missing")
+    try:
+        load_dependencies(root)
+    except ValueError as exc:
+        errors.append(str(exc))
     readme = root / "README.md"
     if not readme.is_file():
         errors.append("README.md is missing")

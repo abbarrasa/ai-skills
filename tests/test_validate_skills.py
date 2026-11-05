@@ -1,6 +1,7 @@
 """Exercise packaging failures that would prevent sharing the catalog."""
 
 import tempfile
+import json
 import unittest
 from pathlib import Path
 
@@ -14,10 +15,13 @@ class CatalogTests(unittest.TestCase):
         self.root = Path(self.temporary.name)
         (self.root / "skills").mkdir()
         (self.root / "README.md").write_text("# Catalog\n", encoding="utf-8")
+        self.graph = {}
 
     def skill(self, name, content=None):
         folder = self.root / "skills" / name
         folder.mkdir()
+        self.graph[name] = ["sdd"] if name.startswith("sdd-") else []
+        (self.root / "skills-dependencies.json").write_text(json.dumps(self.graph), encoding="utf-8")
         (folder / "SKILL.md").write_text(
             content if content is not None else
             f"---\nname: {name}\ndescription: Guide creation, review, and validation (SDD).\n---\n\n# Instructions\n",
@@ -32,7 +36,7 @@ class CatalogTests(unittest.TestCase):
     def test_missing_companion_is_rejected(self):
         self.skill("sdd-change")
         errors, _ = validate_catalog(self.root)
-        self.assertTrue(any("required companion" in error for error in errors))
+        self.assertTrue(any("missing dependency" in error for error in errors))
 
     def test_malformed_or_unsupported_frontmatter_is_rejected(self):
         for content in (

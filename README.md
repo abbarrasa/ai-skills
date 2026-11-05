@@ -30,16 +30,42 @@ The skills are language-independent Markdown instructions. Keep C#, PHP, or othe
 stack-specific commands and conventions in each consuming project's instructions
 and constitution. Installing these skills does not install application dependencies.
 
-Use [Skills CLI](https://github.com/vercel-labs/skills), with Node.js 22.20 or later
-on the installing machine. From the root of the destination project:
+### Install one skill with its dependencies (recommended)
+
+Requirements on the installing machine: Git, Python 3.11+, and Node.js 22.20+
+with npm/npx. None is added to your application's runtime dependencies. On Windows,
+use `python` or `py -3` instead of `python3` if appropriate for your installation.
+
+Clone this catalog outside the destination project, then run its installer:
 
 ```bash
-npx skills@1.7.6 add abbarrasa/ai-skills --list
-npx skills@1.7.6 add abbarrasa/ai-skills --skill sdd constitution sdd-change sdd-status feature --agent codex github-copilot --copy
+git clone https://github.com/abbarrasa/ai-skills.git
+python3 ai-skills/scripts/install_skills.py --skill sdd-status --project /path/to/your-project --dry-run
+python3 ai-skills/scripts/install_skills.py --skill sdd-status --project /path/to/your-project
 ```
 
-These commands use the repository's default branch, so only committed and pushed
-skills are available. Select only the agents you use. For Codex and GitHub Copilot,
+The second command previews `feature`, `sdd`, and `sdd-status`; the third installs
+that selection using [Skills CLI](https://github.com/vercel-labs/skills) 1.7.6.
+The script invokes `npx --yes skills@1.7.6`, which can download that pinned CLI
+from npm on first use. It does not install Python, Node.js, or npm for you.
+By default it targets Codex and GitHub Copilot. Override with `--agent codex`,
+for example; pass `--yes` only when you want to skip installer confirmations.
+The destination directory must already exist and be outside the catalog checkout.
+
+Select multiple skills or the entire catalog:
+
+```bash
+python3 ai-skills/scripts/install_skills.py --skill constitution sdd-change --project /path/to/your-project --agent codex
+python3 ai-skills/scripts/install_skills.py --skill '*' --project /path/to/your-project
+```
+
+Dependencies are declared once in [skills-dependencies.json](skills-dependencies.json).
+The installer resolves transitive dependencies, installs each once, and checks
+for unknown skills, missing catalog entries, and cycles before invoking Skills CLI.
+All files come from the same local checkout, including uncommitted changes: use
+a clean checkout of a reviewed release for established projects.
+
+The installer uses copies, not symlinks. For Codex and GitHub Copilot,
 the installer currently targets `.agents/skills/`. Other agents may use different
 locations; let the installer choose them. See its
 [agent compatibility table](https://github.com/vercel-labs/skills/blob/main/docs/agents.md).
@@ -48,17 +74,18 @@ Commit the installed skill folders and any installer-generated lockfile to the
 destination project's Git repository. Review the diff before committing; do not
 overwrite locally customized skills without reconciling their changes.
 
-For a reproducible installation, replace the default branch with a published tag
-or full commit SHA. **The following example requires a published `v1.0.0` tag; it
-does not create one:**
+For a reproducible installation, check out a published tag or full commit SHA
+before running the script. **This example requires a published `v1.0.0` tag:**
 
 ```bash
-npx skills@1.7.6 add abbarrasa/ai-skills@v1.0.0 --skill sdd constitution sdd-change sdd-status feature --agent codex github-copilot --copy
+git -C ai-skills checkout v1.0.0
+python3 ai-skills/scripts/install_skills.py --skill sdd-status --project /path/to/your-project
 ```
 
-For strict reproducibility, also record and pin the tested Skills CLI version
-using `npx skills@<CLI_VERSION>`. The CLI is an installation tool, not a dependency
-of the C# or PHP application. See the official
+Record the catalog's Git commit/tag alongside the installed files. Skills CLI's
+lockfile may identify the source as a local checkout path, which is not a portable
+replacement for recording the Git revision. Keep the clone for future updates;
+the installed copies do not depend on it at runtime. See the official
 [command reference](https://github.com/vercel-labs/skills/blob/main/docs/commands.md).
 
 The local catalog was smoke-tested with Node.js 24.22.2, npm 11.19.1, and Skills
@@ -66,11 +93,17 @@ CLI 1.7.6: all five skills were discovered, installed with `--copy` for Codex an
 GitHub Copilot, and compared byte-for-byte with the sources. This verifies
 installation, not agent execution or the behavior of a published release.
 
-To test unpublished changes, run this from a disposable destination directory,
-replacing the source path with your local checkout:
+To test unpublished changes, run the same script from your local catalog checkout
+with an existing disposable destination directory.
+
+### Direct Skills CLI installation
+
+Skills CLI does not resolve this catalog's dependency manifest. If you bypass
+our script, explicitly include every dependency or install the entire catalog.
+From the destination project, the complete set can be installed with:
 
 ```bash
-npx skills@1.7.6 add /absolute/path/to/ai-skills --skill sdd constitution sdd-change sdd-status feature --agent codex github-copilot --copy
+npx skills@1.7.6 add abbarrasa/ai-skills --skill feature sdd constitution sdd-change sdd-status --agent codex github-copilot --copy
 npx skills@1.7.6 list
 ```
 
@@ -78,16 +111,18 @@ npx skills@1.7.6 list
 
 | Skill | Purpose | Required companion |
 | --- | --- | --- |
-| [sdd](skills/sdd/SKILL.md) | Complete SDD workflow and approval gates | None |
+| [sdd](skills/sdd/SKILL.md) | Complete SDD workflow and approval gates | `feature` |
 | [constitution](skills/constitution/SKILL.md) | Propose and approve project principles | `sdd` |
 | [sdd-change](skills/sdd-change/SKILL.md) | Change requirements before downstream implementation | `sdd` |
 | [sdd-status](skills/sdd-status/SKILL.md) | Read-only phase, progress, and next-step report | `sdd` |
 | [feature](skills/feature/SKILL.md) | General feature planning before implementation | None |
 
-`feature` is a general planning helper; use `sdd` for the full SDD lifecycle.
-Install dependent skills together with `sdd`: the CLI does not infer dependencies
-from prose instructions. Project-local installation is recommended for teams;
-add `--global` only when you intentionally want a personal installation.
+The table lists direct dependencies. `feature` has none; `sdd` depends on `feature`;
+`constitution`, `sdd-change`, and `sdd-status` each depend on `sdd` and therefore
+transitively on `feature`. Installing a dependency does not itself authorize a
+workflow phase or override SDD approval gates. The wrapper installs per project;
+use direct Skills CLI with `--global` only for intentional personal installations,
+including the complete dependency selection yourself.
 
 ## Use in a destination project
 
@@ -102,8 +137,9 @@ add `--global` only when you intentionally want a personal installation.
 
 ## Updates and releases
 
-Use a deliberate upgrade PR in each consuming project. Re-run installation with
-the chosen newer tag or full commit, review all installed changes, verify agent
+Use a deliberate upgrade PR in each consuming project. Update the catalog clone
+to the chosen newer tag or full commit and re-run the dependency-aware installer
+for the desired skills. Review all installed changes, verify agent
 discovery, and record the source revision and installer version. Avoid automatic
 upgrades from a moving branch for established projects.
 
@@ -130,14 +166,14 @@ plain YAML strings: `name` and `description`. Quote-free text must satisfy the
 validator's conservative YAML checks; do not use multiline or nested metadata
 without first extending validation with a YAML parser.
 
-Python 3.11 or later is required only for catalog maintenance:
+Python 3.11 or later is required for the dependency-aware installer and catalog checks:
 
 ```bash
 python3 scripts/validate_skills.py
 python3 -m unittest discover -s tests -v
 ```
 
-The checks validate catalog packaging, naming, descriptions, companion availability,
+The checks validate catalog packaging, naming, descriptions, dependency graph integrity,
 and referenced catalog links. They do not prove agent behavior or SDD compliance.
 GitHub Actions runs the same checks on pull requests, pushes, and manual dispatch.
 No Python package installation is required.

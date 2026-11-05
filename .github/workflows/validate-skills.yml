@@ -21,5 +21,5 @@ jobs:
           python-version: '3.13'
       - name: Validate skill catalog
         run: python scripts/validate_skills.py
-      - name: Test catalog validator
+      - name: Test validation and dependency installer
         run: python -m unittest discover -s tests -v
