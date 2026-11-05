@@ -1,0 +1,7 @@
+{
+  "feature": [],
+  "sdd": ["feature"],
+  "constitution": ["sdd"],
+  "sdd-change": ["sdd"],
+  "sdd-status": ["sdd"]
+}
