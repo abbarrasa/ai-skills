@@ -32,9 +32,36 @@ and constitution. Installing these skills does not install application dependenc
 
 ### Install one skill with its dependencies (recommended)
 
-Requirements on the installing machine: Git, Python 3.11+, and Node.js 22.20+
-with npm/npx. None is added to your application's runtime dependencies. On Windows,
-use `python` or `py -3` instead of `python3` if appropriate for your installation.
+Requirements on the installing machine:
+
+| Tool | Required version | Tested version |
+| --- | --- | --- |
+| Node.js | 22.20.0 or newer; use the 24.x line to match our tested major version | 24.22.2 |
+| npm | Use the version bundled with your Node.js installation | 11.19.1 |
+| npx | Included with npm; must be available on `PATH` | Bundled with npm 11.19.1 |
+| Python | 3.11 or newer | 3.13.5 |
+| Git | Required to clone and select catalog revisions | No specific version pinned |
+
+Node.js 20.x and versions earlier than 22.20.0 do not meet the documented
+requirement. The minimum is not a claim that every newer release was tested;
+the tested versions above identify the actual installation smoke-test environment.
+There is no separate npm or npx installation/version pin for this catalog.
+See [Skills CLI prerequisites](https://github.com/vercel-labs/skills#install-a-skill).
+
+Verify availability in the same terminal where you will run the installer:
+
+```bash
+node --version
+npm --version
+npx --version
+python3 --version
+git --version
+```
+
+If `npx` is missing, install Node.js with npm and reopen your terminal before
+retrying. None of these tools is added to your application's runtime dependencies.
+On Windows, use `python` or `py -3` instead of `python3` if appropriate for your
+installation.
 
 Clone this catalog outside the destination project, then run its installer:
 
