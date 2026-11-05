@@ -1,0 +1,25 @@
+name: Validate skills
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - name: Validate skill catalog
+        run: python scripts/validate_skills.py
+      - name: Test catalog validator
+        run: python -m unittest discover -s tests -v
