@@ -193,17 +193,63 @@ plain YAML strings: `name` and `description`. Quote-free text must satisfy the
 validator's conservative YAML checks; do not use multiline or nested metadata
 without first extending validation with a YAML parser.
 
-Python 3.11 or later is required for the dependency-aware installer and catalog checks:
+### Python environment
+
+Python 3.11 or later is required for the dependency-aware installer and catalog
+checks. For development, use Python 3.13 to match the major/minor version used by
+GitHub Actions. CI currently selects the 3.13 line rather than an exact patch
+version; this does not guarantee an identical interpreter across machines.
+If the project adopts an exact development version, record it in a committed
+`.python-version` file and keep CI aligned with it.
+
+The scripts and tests use only Python's standard library, including `unittest`.
+No Python package installation is required, so the catalog currently has no
+`requirements.txt`. A virtual environment is optional, but can help keep your
+development environment isolated.
+
+From the catalog checkout, with Python 3.13 already installed, create and activate
+a virtual environment on Linux or macOS:
 
 ```bash
-python3 scripts/validate_skills.py
-python3 -m unittest discover -s tests -v
+python3.13 -m venv .venv
+source .venv/bin/activate
 ```
+
+On Windows PowerShell, use:
+
+```powershell
+py -3.13 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+Keep `.venv/` out of version control. Recreate the environment locally instead
+of sharing or committing it. Run `deactivate` when finished.
+
+Node.js, npm, npx, and Skills CLI are separate prerequisites for installing skills;
+a Python virtual environment does not provide them. See the installation
+requirements above.
+
+If third-party Python packages are introduced, declare the project's actual
+dependencies in `requirements.txt` or `pyproject.toml`. For reproducible package
+versions, pin direct and transitive dependencies or commit an appropriate lockfile.
+Avoid generating a requirements file from a personal environment with unrelated
+packages.
+
+### Run the checks
+
+With the virtual environment activated, run:
+
+```bash
+python scripts/validate_skills.py
+python -m unittest discover -s tests -v
+```
+
+Without a virtual environment, use `python3` on Linux/macOS or `py -3.13` on
+Windows in place of `python`, selecting a supported interpreter.
 
 The checks validate catalog packaging, naming, descriptions, dependency graph integrity,
 and referenced catalog links. They do not prove agent behavior or SDD compliance.
 GitHub Actions runs the same checks on pull requests, pushes, and manual dispatch.
-No Python package installation is required.
 
 ## License
 
