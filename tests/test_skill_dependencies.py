@@ -18,10 +18,11 @@ class DependenciesTests(unittest.TestCase):
         graph = load_dependencies(ROOT)
         expected = {
             "feature": ["feature"],
-            "sdd": ["feature", "sdd"],
-            "constitution": ["feature", "sdd", "constitution"],
-            "sdd-change": ["feature", "sdd", "sdd-change"],
-            "sdd-status": ["feature", "sdd", "sdd-status"],
+            "sdd-code-review": ["sdd-code-review"],
+            "sdd": ["feature", "sdd-code-review", "sdd"],
+            "constitution": ["feature", "sdd-code-review", "sdd", "constitution"],
+            "sdd-change": ["feature", "sdd-code-review", "sdd", "sdd-change"],
+            "sdd-status": ["feature", "sdd-code-review", "sdd", "sdd-status"],
         }
         self.assertEqual(set(graph), set(expected))
         for name, selection in expected.items():
@@ -31,7 +32,7 @@ class DependenciesTests(unittest.TestCase):
     def test_shared_dependencies_are_installed_once(self):
         graph = load_dependencies(ROOT)
         self.assertEqual(resolve_dependencies(graph, ["constitution", "sdd-status", "sdd"]),
-                         ["feature", "sdd", "constitution", "sdd-status"])
+                         ["feature", "sdd-code-review", "sdd", "constitution", "sdd-status"])
 
     def test_unknown_skills_missing_dependencies_and_cycles_fail(self):
         for graph, requested in (({"a": []}, ["unknown"]),
@@ -61,7 +62,7 @@ class DependenciesTests(unittest.TestCase):
                 self.assertEqual(main(["--skill", "sdd-status", "--project", directory, "--yes"]), 7)
                 command = run.call_args.args[0]
                 self.assertEqual(command[command.index("--skill") + 1:command.index("--agent")],
-                                 ["feature", "sdd", "sdd-status"])
+                                 ["feature", "sdd-code-review", "sdd", "sdd-status"])
                 self.assertEqual(run.call_args.kwargs["cwd"], Path(directory).resolve())
                 self.assertIn("--copy", command)
 

@@ -7,7 +7,7 @@ description: Guide Spec-Driven Development (SDD) when creating, reviewing, or ch
 
 Turn an approved statement of user needs into a traceable, tested implementation. Follow this workflow:
 
-Constitution → Specification → Clarification → Plan → Tasks → Implementation → Validation → Change (when needed).
+Constitution → Specification → Clarification → Plan → Tasks → Implementation → Validation (including code review) → Change (when needed).
 
 ## Operating rules
 
@@ -146,20 +146,34 @@ If implementation reveals a requirement gap or requires a material plan change, 
 
 ## 7. Validation — assess without repairing
 
-Validate the approved specification against the implementation. Run the agreed checks and produce a requirement-by-requirement report:
+After the user authorizes validation, apply the installed `sdd-code-review` skill
+to the approved specification and the intended merge scope. Prefer a fresh
+review session when practical. You may use a separate report when its approved
+specification, change scope, and evidence match the current validation. If the
+companion skill is missing, report the installation gap and leave validation
+incomplete.
 
-| Requirement | Acceptance criterion | Test or manual procedure | Actual result | Verdict |
-| --- | --- | --- | --- | --- |
-| FR-1 / NFR-1 | AC-1 or inline condition | Test ID and command, or reproducible steps | Observed evidence | PASS / FAIL / NOT VERIFIED |
+Use the review's requirement-by-requirement report to cover every FR and NFR,
+all completion criteria, relevant regression results, and constitution
+compliance. Execute any agreed checks still needed for this revision and
+reassess the review verdict with that evidence. Report missing coverage,
+failed checks, and unavailable environments. Record the review scope, verdict,
+and evidence reference in `MEMORY.md` with the validation result. Keep the review
+itself read-only.
 
-Include every FR and NFR. Explicitly report missing coverage, failed checks, and unavailable environments. Distinguish test existence from successful execution. Check all completion criteria, relevant regression results, and constitution compliance.
-
-Give a clear verdict: **fulfilled**, **not fulfilled**, or **not fully verified**, supported by evidence. Do not repair defects during this phase. Present findings and request approval for any corrective work. Mark the specification `implemented` only when all requirements and completion criteria pass and the user accepts validation.
+Give a clear verdict supported by evidence. Report **not fulfilled** for confirmed
+blockers or unmet criteria and **not fully verified** when required review or
+verification evidence is incomplete. Report **fulfilled** only with a current
+review verdict of **PASS** and all requirements and completion criteria passing.
+Do not repair defects during this phase. Present findings and request approval
+for any corrective work. Mark the specification `implemented` only when the user
+accepts fulfilled validation for the reviewed scope. Previously accepted
+validation remains historical evidence for its scope.
 
 ## 8. Change and corrective work
 
 - For a requirement change, describe the requested change and its impact on scope, requirement IDs, acceptance criteria, dependencies, tasks, tests, and completed work.
 - Update `spec.md` first; repeat clarification as needed and obtain approval. Then revise and obtain approval for the affected plan and tasks before changing code. Preserve unaffected approvals and completed work when still valid.
 - For an implementation defect under unchanged requirements, retain the approved specification, add or reopen a corrective task, revise the plan only if necessary, and obtain authorization before fixing it.
-- Identify which previous approvals and validation results are stale. Return an affected specification to `draft` when its approved requirements change; return an accepted implementation to `approved` when corrective implementation is needed.
-- Implement authorized corrective tasks one at a time, then repeat affected validation and required regression checks. Keep `MEMORY.md` aligned with the current state.
+- Identify which previous approvals, review findings, and validation results are stale. Return an affected specification to `draft` when its approved requirements change; return an accepted implementation to `approved` when corrective implementation is needed.
+- Implement authorized corrective tasks one at a time, then review the updated scope and repeat affected validation and required regression checks. Keep `MEMORY.md` aligned with the current state.

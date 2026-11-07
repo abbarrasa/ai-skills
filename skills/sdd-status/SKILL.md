@@ -29,15 +29,15 @@ Use the current artifacts and revision-specific evidence, not merely the last ph
 | Current specification approved; plan absent or draft | Plan pending or in progress | Draft or review the plan within the authorized phase |
 | Current plan approved; tasks absent or draft | Tasks pending or in progress | Prepare or review the task list within the authorized phase |
 | Tasks approved; work remains | Implementation ready, in progress, or blocked | Request authorization for, or continue, the next eligible task |
-| All tasks marked complete; validation absent or incomplete | Implementation reported complete; Validation pending or in progress | Check completion evidence and obtain any required approval to begin validation |
-| Validation has failures or unverified requirements | Validation not fulfilled or not fully verified | Present findings and request authorization for corrective work or missing checks |
-| Current requirements and completion criteria verified; acceptance pending | Validation awaiting acceptance | Request acceptance of the reported validation |
+| All tasks marked complete; validation absent | Implementation reported complete; Validation pending | Check completion evidence and obtain any required approval to begin validation |
+| Validation started and has failures or lacks required review or check evidence | Validation not fulfilled or not fully verified | Present blockers and identify the corrective task or missing review or check |
+| Current requirements and completion criteria verified; code review passed; acceptance pending | Validation awaiting acceptance | Request acceptance of the reported validation |
 | Current validation accepted | Complete | No required next step for this revision |
 | Requirements changed after approval or implementation | Change in progress | Resolve and approve the changed specification, then revise affected plan and tasks in order |
 
 Apply the `sdd` approval gates to every suggested action. Existing explicit authorization remains valid for its scope; do not request it again without a revision or scope change. If the table cannot distinguish adjacent stages, report that uncertainty and the specific evidence needed.
 
-Check for open clarification questions, constitution conflicts, stale plan or task references, missing dependencies, and validation for an older revision. Treat memory as supporting context; when it contradicts artifacts, report the discrepancy rather than silently choosing whichever suggests greater progress. Do not declare a specification complete based only on `Status: implemented` or checked boxes.
+Check for open clarification questions, constitution conflicts, stale plan or task references, missing dependencies, and review or validation evidence for an older revision or change scope. Keep previously accepted validation for its historical scope. Treat memory as supporting context; when it contradicts artifacts, report the discrepancy rather than silently choosing whichever suggests greater progress. Do not declare a specification complete based only on `Status: implemented` or checked boxes.
 
 ## 3. Count tasks consistently
 
