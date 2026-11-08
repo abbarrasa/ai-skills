@@ -50,7 +50,7 @@ Identify the changes that would be needed after specification approval:
 | --- | --- | --- | --- |
 | `plan.md` | Decision, component, interface, or test strategy | Describe the needed revision | Identify stale scope |
 | `tasks.md` | Existing task ID or proposed new work | Describe additions, revisions, dependencies, or reopened work | Identify completed work needing reassessment |
-| Tests and validation | Requirement and test IDs where known | Describe new or changed checks and regression needs | Identify results that no longer verify the changed requirements |
+| Tests, code review, and validation | Requirement and test IDs where known | Describe new or changed checks and regression needs | Identify review and validation evidence that no longer covers the changed requirements |
 
 Include relevant effects on other specifications and completed implementation when supported by evidence. Mark unknowns explicitly. Preserve unaffected approvals and results; do not assert that all historical work is invalid. An impact report is not an approved implementation plan.
 
