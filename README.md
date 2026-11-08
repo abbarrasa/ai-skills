@@ -2,6 +2,9 @@
 
 Set of AI skills to manage software projects using the Spec-Driven Development (SDD) methodology.
 
+Current catalog version: **1.1.0**, recorded in [VERSION](VERSION).
+Check a local checkout with `python3 scripts/install_skills.py --version`.
+
 ## What is Spec-Driven Development?
 
 Spec-Driven Development (SDD) is a software engineering methodology where a clear, structured and readable specification (usually in Markdown files within the project) acts as the source of truth before writing code.
@@ -14,7 +17,8 @@ Although there are variants, the basic cycle in SDD is divided into several phas
 1. Specify: You define precisely what you want to build, the objectives, business rules, limit cases and acceptance criteria.
 2. Plan: You translate that intention into a technical architecture and system design (plan.md).
 3. Decompose (Tasks): You divide the plan into atomic tasks or small, sequential steps (tasks.md).
-4. Implement & Verify: You deliver this structured documentation to a code agent (such as Claude Code, GitHub Copilot, or Cursor) to generate code and tests within those strict boundaries, verifying that it meets the original specification.
+4. Implement and verify each task: The agent implements the authorized work and runs the agreed checks for that task.
+5. Validate the feature: Review the completed change against the approved specification, trace each requirement to code and verification evidence, and obtain user acceptance before marking the specification implemented.
 
 ### Why has Artificial Intelligence gained so much relevance?
 
@@ -36,10 +40,10 @@ Requirements on the installing machine:
 
 | Tool | Required version | Tested version |
 | --- | --- | --- |
-| Node.js | 22.20.0 or newer; use the 24.x line to match our tested major version | 24.22.2 |
-| npm | Use the version bundled with your Node.js installation | 11.19.1 |
+| Node.js | 22.20.0 or newer; use the 24.x line to match our tested major version | 24.22.1 |
+| npm | Use the version bundled with your Node.js installation | 11.9.0 |
 | npx | Included with npm; must be available on `PATH` | Bundled with npm 11.19.1 |
-| Python | 3.11 or newer | 3.13.5 |
+| Python | 3.11 or newer | 3.12.14 |
 | Git | Required to clone and select catalog revisions | No specific version pinned |
 
 Node.js 20.x and versions earlier than 22.20.0 do not meet the documented
@@ -71,7 +75,7 @@ python3 ai-skills/scripts/install_skills.py --skill sdd-status --project /path/t
 python3 ai-skills/scripts/install_skills.py --skill sdd-status --project /path/to/your-project
 ```
 
-The second command previews `feature`, `sdd`, and `sdd-status`; the third installs
+The second command previews `feature`, `sdd`, and `sdd-status`. The third installs
 that selection using [Skills CLI](https://github.com/vercel-labs/skills) 1.7.6.
 The script invokes `npx --yes skills@1.7.6`, which can download that pinned CLI
 from npm on first use. It does not install Python, Node.js, or npm for you.
@@ -84,6 +88,13 @@ Select multiple skills or the entire catalog:
 ```bash
 python3 ai-skills/scripts/install_skills.py --skill constitution sdd-change --project /path/to/your-project --agent codex
 python3 ai-skills/scripts/install_skills.py --skill '*' --project /path/to/your-project
+```
+
+To install code review and its complete dependency chain (`feature`, `sdd`,
+`sdd-code-review`), run:
+
+```bash
+python3 ai-skills/scripts/install_skills.py --skill sdd-code-review --project /path/to/your-project
 ```
 
 Dependencies are declared once in [skills-dependencies.json](skills-dependencies.json).
@@ -102,10 +113,10 @@ destination project's Git repository. Review the diff before committing; do not
 overwrite locally customized skills without reconciling their changes.
 
 For a reproducible installation, check out a published tag or full commit SHA
-before running the script. **This example requires a published `v1.0.0` tag:**
+before running the script. **This example requires a published `v1.1.0` tag:**
 
 ```bash
-git -C ai-skills checkout v1.0.0
+git -C ai-skills checkout v1.1.0
 python3 ai-skills/scripts/install_skills.py --skill sdd-status --project /path/to/your-project
 ```
 
@@ -115,10 +126,9 @@ replacement for recording the Git revision. Keep the clone for future updates;
 the installed copies do not depend on it at runtime. See the official
 [command reference](https://github.com/vercel-labs/skills/blob/main/docs/commands.md).
 
-The local catalog was smoke-tested with Node.js 24.22.2, npm 11.19.1, and Skills
-CLI 1.7.6: all five skills were discovered, installed with `--copy` for Codex and
-GitHub Copilot, and compared byte-for-byte with the sources. This verifies
-installation, not agent execution or the behavior of a published release.
+The six-skill catalog was smoke-tested with the versions above and Skills CLI
+1.7.6. The smoke test verified discovery and byte-for-byte copies for Codex,
+GitHub Copilot, and Claude Code.
 
 To test unpublished changes, run the same script from your local catalog checkout
 with an existing disposable destination directory.
@@ -130,26 +140,29 @@ our script, explicitly include every dependency or install the entire catalog.
 From the destination project, the complete set can be installed with:
 
 ```bash
-npx skills@1.7.6 add abbarrasa/ai-skills --skill feature sdd constitution sdd-change sdd-status --agent codex github-copilot --copy
+npx skills@1.7.6 add abbarrasa/ai-skills --skill feature sdd-code-review sdd constitution sdd-change sdd-status --agent codex github-copilot --copy
 npx skills@1.7.6 list
 ```
 
 ## Available skills
 
-| Skill | Purpose | Required companion |
+| Skill | Purpose | Required companions |
 | --- | --- | --- |
 | [sdd](skills/sdd/SKILL.md) | Complete SDD workflow and approval gates | `feature` |
 | [constitution](skills/constitution/SKILL.md) | Propose and approve project principles | `sdd` |
 | [sdd-change](skills/sdd-change/SKILL.md) | Change requirements before downstream implementation | `sdd` |
 | [sdd-status](skills/sdd-status/SKILL.md) | Read-only phase, progress, and next-step report | `sdd` |
+| [sdd-code-review](skills/sdd-code-review/SKILL.md) | Read-only code review against an approved spec and change scope | `sdd` |
 | [feature](skills/feature/SKILL.md) | General feature planning before implementation | None |
 
-The table lists direct dependencies. `feature` has none; `sdd` depends on `feature`;
-`constitution`, `sdd-change`, and `sdd-status` each depend on `sdd` and therefore
-transitively on `feature`. Installing a dependency does not itself authorize a
-workflow phase or override SDD approval gates. The wrapper installs per project;
-use direct Skills CLI with `--global` only for intentional personal installations,
-including the complete dependency selection yourself.
+The table lists direct dependencies. The wrapper installs dependencies transitively
+in the destination project. SDD phase approvals still apply. Use direct Skills CLI
+with `--global` for intentional personal installations and include the complete
+dependency selection.
+
+`sdd-code-review` extends `sdd`; the base workflow does not install the review
+extension. Install it before completing SDD validation. Installing `sdd-status`,
+`sdd-change`, or `constitution` alone brings in `sdd` and `feature` only.
 
 ## Use in a destination project
 
@@ -162,6 +175,25 @@ including the complete dependency selection yourself.
 3. Keep shared skills unchanged where possible. Put local conventions in project
    instructions and propose reusable workflow improvements in this catalog.
 
+### Review a completed implementation
+
+After authorizing validation, identify the feature directory and the change scope
+to review. In Codex you can run the review separately, preferably in a fresh
+session. Replace the example path and target branch with your project's values.
+
+```text
+$sdd-code-review specs/001-feature-name/ Review committed HEAD changes for a merge into dev.
+```
+
+You can also provide a PR reference and let the reviewer resolve its actual base
+and head. For agents without skill discovery, give the agent the installed
+`sdd-code-review/SKILL.md` path and the same inputs.
+
+Use the review report in `sdd` validation. **PASS** supplies review evidence for
+the user's acceptance of validation. **CHANGES REQUESTED** identifies blockers
+for authorized corrective work. **INCOMPLETE** identifies missing scope or
+verification evidence. Recheck the updated scope after fixes.
+
 ## Updates and releases
 
 Use a deliberate upgrade PR in each consuming project. Update the catalog clone
@@ -173,7 +205,10 @@ upgrades from a moving branch for established projects.
 This catalog uses `vMAJOR.MINOR.PATCH` tags: major for incompatible workflow,
 approval, or document-contract changes; minor for compatible capabilities or new
 skills; patch for corrections that preserve those contracts. Do not move a
-published tag. Remove local skill overrides only after reviewing their purpose.
+published tag. Version 1.1.0 adds the code-review extension and corrects its
+installation dependency to `sdd` (which depends on `feature`). Update [VERSION](VERSION)
+and the release examples together when preparing a release. Remove local skill
+overrides only after reviewing their purpose.
 
 Before publishing a release:
 

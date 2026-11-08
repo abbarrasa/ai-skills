@@ -14,14 +14,16 @@ except ImportError:
 
 
 def main(argv=None) -> int:
+    root = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--version", action="version",
+                        version=f"%(prog)s {(root / 'VERSION').read_text(encoding='utf-8').strip()}")
     parser.add_argument("--skill", nargs="+", required=True, help="Skill names, or '*' for the entire catalog")
     parser.add_argument("--project", type=Path, required=True, help="Existing destination project directory")
     parser.add_argument("--agent", nargs="+", default=["codex", "github-copilot"], help="Skills CLI agent names")
     parser.add_argument("--yes", action="store_true", help="Skip Skills CLI confirmation prompts")
     parser.add_argument("--dry-run", action="store_true", help="Print resolved selection and command without installing")
     args = parser.parse_args(argv)
-    root = Path(__file__).resolve().parents[1]
     try:
         graph = load_dependencies(root)
         requested = list(graph) if args.skill == ["*"] else args.skill

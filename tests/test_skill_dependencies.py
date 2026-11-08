@@ -1,6 +1,8 @@
 """Verify transitive installation selections and reject invalid dependency catalogs."""
 
 import json
+import io
+from contextlib import redirect_stdout
 import tempfile
 import unittest
 from pathlib import Path
@@ -18,6 +20,7 @@ class DependenciesTests(unittest.TestCase):
         graph = load_dependencies(ROOT)
         expected = {
             "feature": ["feature"],
+            "sdd-code-review": ["feature", "sdd", "sdd-code-review"],
             "sdd": ["feature", "sdd"],
             "constitution": ["feature", "sdd", "constitution"],
             "sdd-change": ["feature", "sdd", "sdd-change"],
@@ -30,8 +33,24 @@ class DependenciesTests(unittest.TestCase):
 
     def test_shared_dependencies_are_installed_once(self):
         graph = load_dependencies(ROOT)
-        self.assertEqual(resolve_dependencies(graph, ["constitution", "sdd-status", "sdd"]),
-                         ["feature", "sdd", "constitution", "sdd-status"])
+        self.assertEqual(resolve_dependencies(graph, ["sdd-code-review", "constitution", "sdd-status", "sdd"]),
+                         ["feature", "sdd", "sdd-code-review", "constitution", "sdd-status"])
+
+    def test_entire_catalog_resolves_once_in_dependency_order(self):
+        graph = load_dependencies(ROOT)
+        selected = resolve_dependencies(graph, list(graph))
+        self.assertEqual(set(selected), set(graph))
+        self.assertEqual(len(selected), len(graph))
+        for name, dependencies in graph.items():
+            for dependency in dependencies:
+                self.assertLess(selected.index(dependency), selected.index(name))
+
+    def test_version_does_not_require_installation_arguments(self):
+        output = io.StringIO()
+        with redirect_stdout(output), self.assertRaises(SystemExit) as result:
+            main(["--version"])
+        self.assertEqual(result.exception.code, 0)
+        self.assertIn("1.1.0", output.getvalue())
 
     def test_unknown_skills_missing_dependencies_and_cycles_fail(self):
         for graph, requested in (({"a": []}, ["unknown"]),
@@ -58,10 +77,10 @@ class DependenciesTests(unittest.TestCase):
             with patch("scripts.install_skills.shutil.which", return_value="/tools/npx"), \
                  patch("scripts.install_skills.subprocess.run") as run:
                 run.return_value.returncode = 7
-                self.assertEqual(main(["--skill", "sdd-status", "--project", directory, "--yes"]), 7)
+                self.assertEqual(main(["--skill", "sdd-code-review", "--project", directory, "--yes"]), 7)
                 command = run.call_args.args[0]
                 self.assertEqual(command[command.index("--skill") + 1:command.index("--agent")],
-                                 ["feature", "sdd", "sdd-status"])
+                                 ["feature", "sdd", "sdd-code-review"])
                 self.assertEqual(run.call_args.kwargs["cwd"], Path(directory).resolve())
                 self.assertIn("--copy", command)
 
