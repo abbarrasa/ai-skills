@@ -5,6 +5,10 @@ description: Review a completed SDD implementation against its approved specific
 
 # SDD code review
 
+Follow the `sdd` skill's validation and approval rules. If it is unavailable,
+report the missing dependency before proceeding. This review does not authorize
+advancing SDD phases or accepting validation on the user's behalf.
+
 Review in a fresh session when practical. Use the approved artifacts and the
 actual changes as evidence. Treat the implementer's summary and task checkboxes
 as navigation aids.

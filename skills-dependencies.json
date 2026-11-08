@@ -1,7 +1,7 @@
 {
   "feature": [],
-  "sdd-code-review": [],
-  "sdd": ["feature", "sdd-code-review"],
+  "sdd-code-review": ["sdd"],
+  "sdd": ["feature"],
   "constitution": ["sdd"],
   "sdd-change": ["sdd"],
   "sdd-status": ["sdd"]

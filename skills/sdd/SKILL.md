@@ -151,7 +151,8 @@ to the approved specification and the intended merge scope. Prefer a fresh
 review session when practical. You may use a separate report when its approved
 specification, change scope, and evidence match the current validation. If the
 companion skill is missing, report the installation gap and leave validation
-incomplete.
+incomplete. Install `sdd-code-review` with its dependencies before completing
+validation; it is a separate extension of this base workflow.
 
 Use the review's requirement-by-requirement report to cover every FR and NFR,
 all completion criteria, relevant regression results, and constitution

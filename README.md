@@ -2,6 +2,9 @@
 
 Set of AI skills to manage software projects using the Spec-Driven Development (SDD) methodology.
 
+Current catalog version: **1.0.1**, recorded in [VERSION](VERSION).
+Check a local checkout with `python3 scripts/install_skills.py --version`.
+
 ## What is Spec-Driven Development?
 
 Spec-Driven Development (SDD) is a software engineering methodology where a clear, structured and readable specification (usually in Markdown files within the project) acts as the source of truth before writing code.
@@ -72,7 +75,7 @@ python3 ai-skills/scripts/install_skills.py --skill sdd-status --project /path/t
 python3 ai-skills/scripts/install_skills.py --skill sdd-status --project /path/to/your-project
 ```
 
-The second command previews `feature`, `sdd-code-review`, `sdd`, and `sdd-status`. The third installs
+The second command previews `feature`, `sdd`, and `sdd-status`. The third installs
 that selection using [Skills CLI](https://github.com/vercel-labs/skills) 1.7.6.
 The script invokes `npx --yes skills@1.7.6`, which can download that pinned CLI
 from npm on first use. It does not install Python, Node.js, or npm for you.
@@ -85,6 +88,13 @@ Select multiple skills or the entire catalog:
 ```bash
 python3 ai-skills/scripts/install_skills.py --skill constitution sdd-change --project /path/to/your-project --agent codex
 python3 ai-skills/scripts/install_skills.py --skill '*' --project /path/to/your-project
+```
+
+To install code review and its complete dependency chain (`feature`, `sdd`,
+`sdd-code-review`), run:
+
+```bash
+python3 ai-skills/scripts/install_skills.py --skill sdd-code-review --project /path/to/your-project
 ```
 
 Dependencies are declared once in [skills-dependencies.json](skills-dependencies.json).
@@ -103,10 +113,10 @@ destination project's Git repository. Review the diff before committing; do not
 overwrite locally customized skills without reconciling their changes.
 
 For a reproducible installation, check out a published tag or full commit SHA
-before running the script. **This example requires a published `v1.0.0` tag:**
+before running the script. **This example requires a published `v1.0.1` tag:**
 
 ```bash
-git -C ai-skills checkout v1.0.0
+git -C ai-skills checkout v1.0.1
 python3 ai-skills/scripts/install_skills.py --skill sdd-status --project /path/to/your-project
 ```
 
@@ -138,17 +148,21 @@ npx skills@1.7.6 list
 
 | Skill | Purpose | Required companions |
 | --- | --- | --- |
-| [sdd](skills/sdd/SKILL.md) | Complete SDD workflow and approval gates | `feature`, `sdd-code-review` |
+| [sdd](skills/sdd/SKILL.md) | Complete SDD workflow and approval gates | `feature` |
 | [constitution](skills/constitution/SKILL.md) | Propose and approve project principles | `sdd` |
 | [sdd-change](skills/sdd-change/SKILL.md) | Change requirements before downstream implementation | `sdd` |
 | [sdd-status](skills/sdd-status/SKILL.md) | Read-only phase, progress, and next-step report | `sdd` |
-| [sdd-code-review](skills/sdd-code-review/SKILL.md) | Read-only code review against an approved spec and change scope | None |
+| [sdd-code-review](skills/sdd-code-review/SKILL.md) | Read-only code review against an approved spec and change scope | `sdd` |
 | [feature](skills/feature/SKILL.md) | General feature planning before implementation | None |
 
 The table lists direct dependencies. The wrapper installs dependencies transitively
 in the destination project. SDD phase approvals still apply. Use direct Skills CLI
 with `--global` for intentional personal installations and include the complete
 dependency selection.
+
+`sdd-code-review` extends `sdd`; the base workflow does not install the review
+extension. Install it before completing SDD validation. Installing `sdd-status`,
+`sdd-change`, or `constitution` alone brings in `sdd` and `feature` only.
 
 ## Use in a destination project
 
@@ -191,7 +205,10 @@ upgrades from a moving branch for established projects.
 This catalog uses `vMAJOR.MINOR.PATCH` tags: major for incompatible workflow,
 approval, or document-contract changes; minor for compatible capabilities or new
 skills; patch for corrections that preserve those contracts. Do not move a
-published tag. Remove local skill overrides only after reviewing their purpose.
+published tag. Version 1.0.1 adds the code-review extension and corrects its
+installation dependency to `sdd` (which depends on `feature`). Update [VERSION](VERSION)
+and the release examples together when preparing a release. Remove local skill
+overrides only after reviewing their purpose.
 
 Before publishing a release:
 
