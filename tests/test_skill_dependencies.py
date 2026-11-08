@@ -50,7 +50,7 @@ class DependenciesTests(unittest.TestCase):
         with redirect_stdout(output), self.assertRaises(SystemExit) as result:
             main(["--version"])
         self.assertEqual(result.exception.code, 0)
-        self.assertIn("1.0.1", output.getvalue())
+        self.assertIn("1.1.0", output.getvalue())
 
     def test_unknown_skills_missing_dependencies_and_cycles_fail(self):
         for graph, requested in (({"a": []}, ["unknown"]),

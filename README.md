@@ -2,7 +2,7 @@
 
 Set of AI skills to manage software projects using the Spec-Driven Development (SDD) methodology.
 
-Current catalog version: **1.0.1**, recorded in [VERSION](VERSION).
+Current catalog version: **1.1.0**, recorded in [VERSION](VERSION).
 Check a local checkout with `python3 scripts/install_skills.py --version`.
 
 ## What is Spec-Driven Development?
@@ -113,10 +113,10 @@ destination project's Git repository. Review the diff before committing; do not
 overwrite locally customized skills without reconciling their changes.
 
 For a reproducible installation, check out a published tag or full commit SHA
-before running the script. **This example requires a published `v1.0.1` tag:**
+before running the script. **This example requires a published `v1.1.0` tag:**
 
 ```bash
-git -C ai-skills checkout v1.0.1
+git -C ai-skills checkout v1.1.0
 python3 ai-skills/scripts/install_skills.py --skill sdd-status --project /path/to/your-project
 ```
 
@@ -205,7 +205,7 @@ upgrades from a moving branch for established projects.
 This catalog uses `vMAJOR.MINOR.PATCH` tags: major for incompatible workflow,
 approval, or document-contract changes; minor for compatible capabilities or new
 skills; patch for corrections that preserve those contracts. Do not move a
-published tag. Version 1.0.1 adds the code-review extension and corrects its
+published tag. Version 1.1.0 adds the code-review extension and corrects its
 installation dependency to `sdd` (which depends on `feature`). Update [VERSION](VERSION)
 and the release examples together when preparing a release. Remove local skill
 overrides only after reviewing their purpose.
